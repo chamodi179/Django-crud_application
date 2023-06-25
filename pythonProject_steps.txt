@@ -1,0 +1,166 @@
+create crud_application (py createproject crud_application)
+create 'app' within crud_application (py manage.py createapp app)
+got to settings.py and update below code:
+	INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+
+add 'app' -->
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'app',
+]
+
+AND
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+to
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': ['templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+----------------
+create urls.py file in app folder.
+go to crud_application/urls.py
+modify as following. 
+
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('app.urls')),
+]
+---------------------------------------
+go to app/urls.py
+add following code.
+
+from app import views
+from django.urls import path
+
+urlpatterns = [
+    path('',views.index,name="index")
+]
+
+
+---------------------------------------
+go to app/view.py
+add following code.
+
+from django.shortcuts import render
+
+# Create your views here.
+def index(request):
+    return render(request, 'index.html')
+-----------------------------------------
+
+create about.html in templates folder.
+add following code for views.py
+
+def about(request):
+    return render(request, 'about.html')
+
+------------------------------------------
+add following code for app/urls.py
+path('about',views.about,name="about")
+
+----------------------------------------
+goto-> 
+https://getbootstrap.com/docs/5.3/getting-started/introduction/
+
+copy starting code and paste it to index.html
+after creating "insert student details" form, go to the models.py
+
+create Student table and related fields to save inserted data in index.html. 
+from django.db import models
+
+# Create your models here.
+class Student(models.Model):
+    name= models.CharField(max_length=25, blank=False, null=False)
+    email= models.EmailField()
+    age= models.IntegerField()
+    gender= models.CharField(max_length=25,blank=False,null=False)
+
+    def __str__(self):
+        # return self.name
+        pass
+
+after creating this migrate running below code in the terminal.
+"py manage.py makemigrations"
+
+----------------------------------------------------------
+in views.py we can create a method to save these details. 
+
+def insertData(request):
+    if request.method=="POST":
+            name= request.POST.get('name')
+            email= request.POST.get('email')
+            age= request.POST.get('age')
+            gender= request.POST.get('gender')
+            query = Student(name=name,email=email,age=age,gender=gender)
+            query.save()
+
+    return render(request, 'index.html')
+
+----------------------------------------------------------------------
+now we can insert some students' information using form.
+run below code in the terminal.
+"py manage.py createsuperuser"
+give credentials asked from us.
+
+Username (leave blank to use 'hp'): chamodi   
+Email address: dmchamodik@gmail.com
+Password: chamodi123# (typing will not be displayed)
+Password (again): chamodi123# (typing will not be displayed)
+
+and go to "http://127.0.0.1:8000/admin"
+provide the credentials (Username= chamodi, Password= chamodi123#) and login to the Django administration dashboard.
+----------------------------------------------------------------------------------------------------------------------
+
+go to admin.py and append below code.
+
+from.models import Student
+admin.site.register(Student)
+-------------------------------------------------------
+
+we can see the 'app' data base and 'Student' table had created.
+---------------------------------------------------------
+
+video stopped- 
+
